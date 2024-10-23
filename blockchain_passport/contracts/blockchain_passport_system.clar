@@ -76,3 +76,22 @@
         false
     )
 )
+
+;; Public functions
+
+(define-public (add-authority (authority-address principal) (authority-name (string-utf8 100)))
+    (begin
+        (asserts! (is-eq tx-sender contract-owner) err-unauthorized)
+        (asserts! (is-none (map-get? PassportAuthorities authority-address)) err-already-exists)
+        
+        (map-set PassportAuthorities
+            authority-address
+            {
+                name: authority-name,
+                active: true,
+                authorized-since: block-height
+            }
+        )
+        (ok true)
+    )
+)
