@@ -69,3 +69,10 @@
         false
     )
 )
+
+(define-read-only (is-authority (address principal))
+    (match (map-get? PassportAuthorities address)
+        authority (get active authority)
+        false
+    )
+)
