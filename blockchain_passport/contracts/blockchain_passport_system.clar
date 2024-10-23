@@ -150,3 +150,21 @@
         (ok true)
     )
 )
+
+(define-public (revoke-passport (passport-id (string-utf8 32)))
+    (begin
+        (asserts! (is-authority tx-sender) err-unauthorized)
+        (asserts! (is-some (map-get? Passports {passport-id: passport-id})) err-not-found)
+        
+        (let (
+            (passport (unwrap-panic (map-get? Passports {passport-id: passport-id})))
+        )
+            (map-set Passports
+                {passport-id: passport-id}
+                (merge passport {is-valid: false})
+            )
+        )
+        
+        (ok true)
+    )
+)
