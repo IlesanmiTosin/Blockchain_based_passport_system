@@ -95,3 +95,20 @@
         (ok true)
     )
 )
+
+(define-public (remove-authority (authority-address principal))
+    (begin
+        (asserts! (is-eq tx-sender contract-owner) err-unauthorized)
+        (asserts! (is-some (map-get? PassportAuthorities authority-address)) err-not-found)
+        
+        (map-set PassportAuthorities
+            authority-address
+            {
+                name: (get name (unwrap-panic (map-get? PassportAuthorities authority-address))),
+                active: false,
+                authorized-since: (get authorized-since (unwrap-panic (map-get? PassportAuthorities authority-address)))
+            }
+        )
+        (ok true)
+    )
+)
