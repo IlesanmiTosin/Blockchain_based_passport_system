@@ -60,3 +60,10 @@
         (ok (map-set Issuers issuer true))
     )
 )
+
+(define-public (add-verifier (verifier principal))
+    (begin
+        (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+        (ok (map-set Verifiers verifier true))
+    )
+)
