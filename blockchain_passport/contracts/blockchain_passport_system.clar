@@ -168,3 +168,24 @@
         (ok true)
     )
 )
+
+(define-public (update-passport-metadata 
+    (passport-id (string-utf8 32))
+    (metadata-url (optional (string-utf8 256)))
+)
+    (begin
+        (asserts! (is-authority tx-sender) err-unauthorized)
+        (asserts! (is-some (map-get? Passports {passport-id: passport-id})) err-not-found)
+        
+        (let (
+            (passport (unwrap-panic (map-get? Passports {passport-id: passport-id})))
+        )
+            (map-set Passports
+                {passport-id: passport-id}
+                (merge passport {metadata-url: metadata-url})
+            )
+        )
+        
+        (ok true)
+    )
+)
