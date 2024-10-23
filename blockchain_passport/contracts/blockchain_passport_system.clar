@@ -52,3 +52,11 @@
     principal
     bool
 )
+
+;; Authorization functions
+(define-public (add-issuer (issuer principal))
+    (begin
+        (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+        (ok (map-set Issuers issuer true))
+    )
+)
