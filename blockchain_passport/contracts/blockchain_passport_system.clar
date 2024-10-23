@@ -76,3 +76,17 @@
 (define-private (is-verifier (account principal))
     (default-to false (map-get? Verifiers account))
 )
+
+(define-private (increment-passport-counter)
+    (begin
+        (var-set passport-counter (+ (var-get passport-counter) u1))
+        (var-get passport-counter)
+    )
+)
+
+(define-private (increment-visa-counter)
+    (begin
+        (var-set visa-counter (+ (var-get visa-counter) u1))
+        (var-get visa-counter)
+    )
+)
