@@ -1,92 +1,61 @@
-;; Passport System - Clarity Smart Contract
+;; Digital Passport System
+;; Written in Clarity for Stacks Blockchain
+;; Error codes:
+;; (err u1) - Unauthorized
+;; (err u2) - Invalid input
+;; (err u3) - Already exists
+;; (err u4) - Not found
+;; (err u5) - Expired or invalid
+;; (err u6) - Operation failed
 
-;; Constants
 (define-constant contract-owner tx-sender)
-(define-constant err-owner-only (err u100))
-(define-constant err-already-exists (err u101))
-(define-constant err-not-found (err u102))
-(define-constant err-unauthorized (err u103))
-(define-constant err-expired (err u104))
-(define-constant err-invalid (err u105))
+(define-constant err-unauthorized (err u1))
+(define-constant err-invalid-input (err u2))
+(define-constant err-already-exists (err u3))
+(define-constant err-not-found (err u4))
+(define-constant err-invalid (err u5))
+(define-constant err-operation-failed (err u6))
 
-;; Data Variables
-(define-data-var passport-counter uint u0)
-(define-data-var visa-counter uint u0)
-
-;; Define maps for storing passport and visa data
+;; Data Maps
 (define-map Passports
-    uint
+    {passport-id: (string-utf8 32)}
     {
         holder: principal,
         full-name: (string-utf8 100),
-        date-of-birth: (string-utf8 10),
+        date-of-birth: uint,
         nationality: (string-utf8 50),
-        issuance-date: uint,
-        expiry-date: uint,
-        data-hash: (buff 32),
-        is-valid: bool
-    }
-)
-
-(define-map PassportHolders
-    principal
-    uint
-)
-
-(define-map Visas
-    {passport-id: uint, visa-id: uint}
-    {
-        country: (string-utf8 50),
         issue-date: uint,
         expiry-date: uint,
-        is-valid: bool
+        is-valid: bool,
+        metadata-url: (optional (string-utf8 256))
     }
 )
 
-(define-map Issuers
+(define-map PassportAuthorities
     principal
+    {
+        name: (string-utf8 100),
+        active: bool,
+        authorized-since: uint
+    }
+)
+
+(define-map HolderPassports
+    principal
+    (string-utf8 32)
+)
+
+;; Storage of passport numbers to prevent duplicates
+(define-map PassportNumbers
+    (string-utf8 32)
     bool
 )
 
-(define-map Verifiers
-    principal
-    bool
+;; Read-only functions
+(define-read-only (get-passport (passport-id (string-utf8 32)))
+    (map-get? Passports {passport-id: passport-id})
 )
 
-;; Authorization functions
-(define-public (add-issuer (issuer principal))
-    (begin
-        (asserts! (is-eq tx-sender contract-owner) err-owner-only)
-        (ok (map-set Issuers issuer true))
-    )
-)
-
-(define-public (add-verifier (verifier principal))
-    (begin
-        (asserts! (is-eq tx-sender contract-owner) err-owner-only)
-        (ok (map-set Verifiers verifier true))
-    )
-)
-
-;; Helper functions
-(define-private (is-issuer (account principal))
-    (default-to false (map-get? Issuers account))
-)
-
-(define-private (is-verifier (account principal))
-    (default-to false (map-get? Verifiers account))
-)
-
-(define-private (increment-passport-counter)
-    (begin
-        (var-set passport-counter (+ (var-get passport-counter) u1))
-        (var-get passport-counter)
-    )
-)
-
-(define-private (increment-visa-counter)
-    (begin
-        (var-set visa-counter (+ (var-get visa-counter) u1))
-        (var-get visa-counter)
-    )
+(define-read-only (get-holder-passport (holder principal))
+    (map-get? HolderPassports holder)
 )
