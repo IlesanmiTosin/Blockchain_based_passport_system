@@ -67,3 +67,12 @@
         (ok (map-set Verifiers verifier true))
     )
 )
+
+;; Helper functions
+(define-private (is-issuer (account principal))
+    (default-to false (map-get? Issuers account))
+)
+
+(define-private (is-verifier (account principal))
+    (default-to false (map-get? Verifiers account))
+)
