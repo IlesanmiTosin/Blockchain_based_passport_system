@@ -1,12 +1,4 @@
 ;; Digital Passport System
-;; Written in Clarity for Stacks Blockchain
-;; Error codes:
-;; (err u1) - Unauthorized
-;; (err u2) - Invalid input
-;; (err u3) - Already exists
-;; (err u4) - Not found
-;; (err u5) - Expired or invalid
-;; (err u6) - Operation failed
 
 (define-constant contract-owner tx-sender)
 (define-constant err-unauthorized (err u1))
